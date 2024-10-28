@@ -6,7 +6,7 @@ from users.models import User
 
 class UserRepository:
     @staticmethod
-    def get_all_users(order_by='-created_on'):
+    def get_all_users(order_by='-created_at'):
         return User.objects.all().order_by(order_by)
 
     @staticmethod
