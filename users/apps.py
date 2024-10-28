@@ -30,7 +30,7 @@ def user_exception_handler(exc, context):
             code = status.HTTP_404_NOT_FOUND
             response = Response(get_response_message(code, exc.message), status=code)
         elif isinstance(exc, InvalidUserDataError):
-            code = status.HTTP_404_NOT_FOUND
+            code = status.HTTP_400_BAD_REQUEST
             response = Response(get_response_message(code, exc.message), status=code)
         else:
             code = status.HTTP_500_INTERNAL_SERVER_ERROR

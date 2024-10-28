@@ -7,12 +7,31 @@ from .serializers import UserSerializer
 from .repository import UserRepository
 
 
+class UserPagination(PageNumberPagination):
+    page_size = 10
+
+
 class UserViewSet(viewsets.ViewSet):
     serializer_class = UserSerializer
+    pagination_class = UserPagination
+    paginator = None
+
+    def paginate_queryset(self, queryset):
+        self.paginator = self.pagination_class()
+        return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
+    def get_paginated_response(self, data):
+        return self.paginator.get_paginated_response(data)
 
     def list(self, request):
         users = UserRepository.get_all_users()
-        return Response(UserSerializer(users, many=True).data)
+        page = self.paginate_queryset(users)
+        if page is not None:
+            serializer = UserSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        else:
+            serializer = UserSerializer(users, many=True)
+            return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
         user = UserRepository.get_user_by_id(pk)
